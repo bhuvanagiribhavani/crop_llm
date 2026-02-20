@@ -1,156 +1,235 @@
-# 🌾 Crop Classification using U-Net Segmentation
+# 🌾 Crop Analytics Dashboard — U-Net Segmentation + Full-Stack Web App
 
-A GPU-optimized deep learning project for semantic segmentation of Sentinel-2 satellite images using PyTorch and U-Net architecture.
+A GPU-optimised deep learning project for **semantic segmentation** of Sentinel-2 satellite imagery, wrapped in a professional **React + FastAPI** dashboard with real-time analytics, NDVI analysis, yield estimation, AI-powered insights, and a rule-based help chatbot.
+
+---
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Dataset Structure](#dataset-structure)
-- [Usage](#usage)
-  - [Training](#training)
-  - [Testing](#testing)
-- [Model Architecture](#model-architecture)
-- [GPU Optimizations](#gpu-optimizations)
-- [Results](#results)
-- [Configuration Options](#configuration-options)
+- [Overview](#-overview)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [API Endpoints](#-api-endpoints)
+- [Frontend Pages](#-frontend-pages)
+- [Model Architecture](#-model-architecture)
+- [GPU Optimisations](#-gpu-optimisations)
+- [Database](#-database)
+- [Configuration](#-configuration)
+- [Results](#-results)
+- [License](#-license)
+
+---
 
 ## 🎯 Overview
 
-This project implements an end-to-end deep learning pipeline for crop classification from satellite imagery. The system uses a U-Net architecture for semantic segmentation, optimized for GPU training with mixed precision support.
+This project implements an **end-to-end crop analysis pipeline**:
 
-**Key Features:**
-- U-Net from scratch with skip connections
-- Mixed precision training (AMP) for faster training
-- Automatic GPU detection and optimization
-- IoU and Dice coefficient metrics
-- Visualization of predictions
+1. **Upload** a Sentinel-2 satellite GeoTIFF image.
+2. A **U-Net model** segments each pixel into one of 8 land-cover classes.
+3. The **dashboard** displays: crop map, class statistics, NDVI value, yield estimation, and AI-generated insights.
+4. A floating **AI Chatbot** provides interface guidance.
+
+---
 
 ## ✨ Features
 
-| Feature | Description |
-|---------|-------------|
-| **U-Net Architecture** | Encoder-decoder with skip connections |
-| **GPU Acceleration** | CUDA support with cuDNN optimization |
-| **Mixed Precision** | `torch.cuda.amp` for 2x faster training |
-| **Data Augmentation** | Random flip and rotation |
-| **Loss Functions** | CrossEntropy + Dice loss |
-| **Metrics** | IoU and Dice coefficient |
-| **Visualization** | Input/GT/Prediction comparison |
+| Category | Feature |
+|----------|---------|
+| **Deep Learning** | U-Net from scratch · 8-class segmentation · 17.2 M params |
+| **Training** | Mixed-precision (AMP) · cuDNN benchmark · Dice + CE loss |
+| **Backend** | FastAPI · CORS · Auto-generated Swagger docs · Static file serving |
+| **Frontend** | React 18 · Tailwind CSS · recharts · Dark mode (class-based) |
+| **Analytics** | NDVI analysis · Yield estimation (tons/ha) · Crop statistics charts |
+| **AI** | LLM Insights page (Mistral-7B ready) · Rule-based help chatbot |
+| **Database** | PostgreSQL 16 + PostGIS 3.4 (models ready, connection deferred) |
+| **DevOps** | Production build served from FastAPI · Single-port deployment |
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | React 18.2, Tailwind CSS, recharts 2.10.4, Lucide React, Axios |
+| **Backend** | Python 3.12, FastAPI, Uvicorn, PyTorch, NumPy, Pillow |
+| **Database** | PostgreSQL 16, PostGIS 3.4, SQLAlchemy, GeoAlchemy2 |
+| **GPU** | CUDA, cuDNN, torch.cuda.amp (mixed precision) |
+| **Model** | U-Net (encoder-decoder with skip connections) |
+
+---
 
 ## 📁 Project Structure
 
 ```
-crop_llm/
+crop_llm_full/
 │
-├── dataset.py          # Custom PyTorch Dataset and DataLoader
-├── model.py            # U-Net architecture implementation
-├── train.py            # GPU-optimized training script
-├── test.py             # Testing and evaluation script
-├── utils.py            # Utility functions (metrics, visualization)
-├── requirements.txt    # Python dependencies
-├── README.md           # This file
+├── backend/                    # 🔧 Backend (FastAPI + ML)
+│   ├── app.py                  #   Main FastAPI server — all API endpoints
+│   ├── model.py                #   U-Net architecture definition
+│   ├── dataset.py              #   PyTorch Dataset class for Sentinel-2
+│   ├── utils.py                #   Utility functions (metrics, visualisation)
+│   ├── train.py                #   Model training script
+│   ├── test.py                 #   Model testing / evaluation
+│   ├── evaluate.py             #   Detailed evaluation & metrics
+│   ├── predict.py              #   Standalone prediction script
+│   ├── check_bands.py          #   Raster band inspection
+│   ├── check_bands_detailed.py #   Detailed band inspection
+│   └── requirements.txt        #   Python dependencies
 │
-├── miniDataSet/        # Dataset folder
-│   ├── train_images/   # Training images
-│   ├── train_masks/    # Training masks
-│   ├── val_images/     # Validation images
-│   ├── val_masks/      # Validation masks
-│   ├── test_images/    # Test images
-│   └── test_masks/     # Test masks
+├── frontend/                   # 🖥 Frontend (React + Tailwind)
+│   ├── public/
+│   ├── src/
+│   │   ├── App.jsx             #   Main app — routing, state, dark mode
+│   │   ├── index.js            #   React entry point
+│   │   ├── styles/
+│   │   │   └── index.css       #   Global CSS + dark mode overrides
+│   │   ├── components/
+│   │   │   ├── Header.jsx          # Top navigation bar
+│   │   │   ├── Sidebar.jsx         # Left navigation sidebar
+│   │   │   ├── UploadCard.jsx      # Image upload + demo loader
+│   │   │   ├── CropMapPanel.jsx    # Segmented crop map display
+│   │   │   ├── StatisticsPanel.jsx # Crop statistics & charts
+│   │   │   ├── NDVIAnalysis.jsx    # NDVI value, scale, classification
+│   │   │   ├── YieldEstimation.jsx # Yield metric cards
+│   │   │   ├── LLMInsights.jsx     # AI-generated crop insights
+│   │   │   ├── ChatBot.jsx         # Floating help chatbot
+│   │   │   ├── ReportsPanel.jsx    # Reports page
+│   │   │   ├── CropInsights.jsx    # Crop insights component
+│   │   │   ├── SegmentationView.jsx# Segmentation visualisation
+│   │   │   ├── NotificationDropdown.jsx
+│   │   │   ├── ProfileDropdown.jsx
+│   │   │   └── SettingsModal.jsx   # Settings (dark mode toggle)
+│   │   └── utils/
+│   │       └── downloadHelpers.js  # Download/export utilities
+│   ├── tailwind.config.js
+│   └── package.json
 │
-├── outputs/            # Training outputs (created during training)
-│   ├── best_model.pth
-│   ├── final_model.pth
-│   └── training_history.png
+├── database/                   # 🗄 Database (PostgreSQL + PostGIS)
+│   ├── database.py             #   SQLAlchemy engine, session factory, init_db()
+│   └── models.py               #   ORM models (CropPrediction table)
 │
-└── test_results/       # Test results (created during testing)
-    ├── test_metrics.txt
-    └── visualizations/
+├── analytics/                  # 📊 Analytics scripts
+│   ├── ndvi.py                 #   NDVI computation
+│   └── crop_health_report.py   #   Crop health report generation
+│
+├── outputs/                    # 📦 Model weights & runtime outputs
+│   ├── best_model.pth          #   Best trained model checkpoint
+│   ├── uploads/                #   Uploaded images
+│   └── predictions/            #   Predicted masks
+│
+├── logs/                       # 📝 Log files
+│   ├── training.log
+│   ├── training_live.log
+│   └── server.log
+│
+├── SEN-2 LULC/                 # 🛰 Sentinel-2 dataset
+│   ├── train_images/
+│   ├── train_masks/
+│   ├── val_images/
+│   ├── val_masks/
+│   ├── test_images/
+│   └── test_masks/
+│
+├── evaluation_report/          # Evaluation outputs
+├── test_results/               # Test prediction outputs
+├── .env                        # Environment variables (DB creds)
+├── .gitignore
+└── README.md
 ```
+
+---
 
 ## 🔧 Installation
 
 ### Prerequisites
 
 - Python 3.8+
+- Node.js 18+ & npm
 - CUDA-capable GPU (recommended)
-- CUDA 11.x or later
+- PostgreSQL 16 + PostGIS 3.4 (optional — DB not yet connected)
 
-### Setup
+### Backend Setup
 
-1. **Clone/Navigate to the project:**
-   ```bash
-   cd crop_llm
-   ```
+```bash
+cd crop_llm_full
 
-2. **Create a virtual environment (optional but recommended):**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   # or
-   venv\Scripts\activate     # Windows
-   ```
+# Create virtual environment (optional)
+python -m venv venv && source venv/bin/activate
 
-3. **Install PyTorch with CUDA support:**
-   ```bash
-   # For CUDA 11.8
-   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
-   
-   # For CUDA 12.1
-   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-   ```
+# Install PyTorch with CUDA
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
-4. **Install other dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Install dependencies
+pip install -r backend/requirements.txt
 
-5. **Verify GPU setup:**
-   ```bash
-   python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
-   ```
-
-## 📊 Dataset Structure
-
-The dataset should be organized as follows:
-
-```
-miniDataSet/
-├── train_images/       # Training satellite images (RGB)
-│   ├── image_001.png
-│   ├── image_002.png
-│   └── ...
-├── train_masks/        # Training segmentation masks
-│   ├── image_001.png   # Same filename as corresponding image
-│   ├── image_002.png
-│   └── ...
-├── val_images/         # Validation images
-├── val_masks/          # Validation masks
-├── test_images/        # Test images
-└── test_masks/         # Test masks
+# Verify GPU
+python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}')"
 ```
 
-**Requirements:**
-- Images: RGB format (PNG, JPG, TIFF supported)
-- Masks: Single-channel grayscale with integer class labels
-- Each mask filename must match its corresponding image filename
+### Frontend Setup
+
+```bash
+cd crop_llm_full/frontend
+
+# Install Node dependencies
+npm install
+
+# Build production bundle
+npm run build
+```
+
+### Database Setup (optional)
+
+```bash
+# Create PostgreSQL database & user
+sudo -u postgres psql -c "CREATE USER crop_user WITH PASSWORD 'Crop@1234';"
+sudo -u postgres psql -c "CREATE DATABASE crop_db OWNER crop_user;"
+sudo -u postgres psql -d crop_db -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+```
+
+Configure credentials in `.env`:
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=crop_db
+DB_USER=crop_user
+DB_PASSWORD=Crop@1234
+```
+
+---
 
 ## 🚀 Usage
 
-### Training
+### Start the Dashboard (Backend + Frontend)
 
-**Basic training with default settings:**
 ```bash
-python train.py
+cd ~/crop_llm_full && python backend/app.py
 ```
 
-**Training with custom parameters:**
+Open **http://localhost:5000/dashboard** in your browser.
+
+### Frontend Dev Server (hot-reload, development only)
+
 ```bash
-python train.py \
-    --data_root miniDataSet \
+cd ~/crop_llm_full/frontend && npm start
+```
+
+Access at **http://localhost:3000** (API calls proxy to port 5000).
+
+### Rebuild Frontend (after React changes)
+
+```bash
+cd ~/crop_llm_full/frontend && npm run build
+```
+
+### Train the Model
+
+```bash
+python backend/train.py \
+    --data_root "SEN-2 LULC" \
     --batch_size 16 \
     --epochs 100 \
     --learning_rate 0.0001 \
@@ -159,57 +238,61 @@ python train.py \
     --use_amp
 ```
 
-**All training options:**
+### Test the Model
+
 ```bash
-python train.py --help
-```
-
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `--data_root` | miniDataSet | Dataset root directory |
-| `--batch_size` | 8 | Training batch size |
-| `--epochs` | 50 | Number of epochs |
-| `--learning_rate` | 1e-4 | Initial learning rate |
-| `--model_type` | unet | Model type (unet, unet_small) |
-| `--loss_type` | combined | Loss function (ce, combined) |
-| `--use_amp` | True | Enable mixed precision |
-| `--scheduler` | plateau | LR scheduler (plateau, cosine, none) |
-| `--output_dir` | outputs | Output directory |
-
-### Testing
-
-**Run evaluation on test set:**
-```bash
-python test.py
-```
-
-**Testing with custom parameters:**
-```bash
-python test.py \
-    --data_root miniDataSet \
+python backend/test.py \
+    --data_root "SEN-2 LULC" \
     --model_path outputs/best_model.pth \
     --batch_size 8 \
-    --visualize \
-    --num_visualize 10
+    --visualize
 ```
 
-**All testing options:**
-```bash
-python test.py --help
-```
+---
 
-## 🏗️ Model Architecture
+## 🌐 API Endpoints
 
-### U-Net
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | Health check — model status & device |
+| `GET` | `/classes` | Land-cover class names & colours |
+| `POST` | `/predict` | Upload image → segmentation mask + insights |
+| `GET` | `/predict/demo` | Demo prediction with sample data |
+| `GET` | `/predictions` | List all stored predictions |
+| `POST` | `/llm-insight/{id}` | Generate AI insight for a prediction |
+| `GET` | `/docs` | Swagger UI (auto-generated) |
+| `GET` | `/redoc` | ReDoc API documentation |
+| `GET` | `/{path}` | Serve React frontend (catch-all) |
 
-The U-Net architecture consists of:
+---
+
+## 🖥 Frontend Pages
+
+| Page | Sidebar Icon | Description |
+|------|-------------|-------------|
+| **Dashboard** | Home | Overview with key metrics |
+| **Upload Image** | Upload | Upload GeoTIFF or load demo data |
+| **Crop Map** | Map | Segmented crop map with class legend |
+| **NDVI Analysis** | LineChart | NDVI value, colour scale, classification |
+| **Crop Statistics** | BarChart | Class distribution pie/bar charts |
+| **Yield Estimation** | Wheat | 4 metric cards (yield, area, per-ha, confidence) |
+| **LLM Insights** | Sparkles | AI-generated crop analysis & recommendations |
+| **Reports** | FileText | Exportable reports |
+| **Help & Support** | HelpCircle | Documentation & support |
+| **Chatbot** | Floating | Rule-based AI Interface Assistant (bottom-right) |
+
+### Dark Mode
+
+Toggle via **Settings** (gear icon in header). Preference saved to `localStorage`.
+
+---
+
+## 🏗 Model Architecture
+
+### U-Net (17.2 M parameters)
 
 ```
 Input (3, 256, 256)
-       │
-   ┌───┴───┐
-   │ Encoder │
-   └───┬───┘
        │
    DoubleConv (64)  ─────────────────────┐
        │                                  │
@@ -229,136 +312,100 @@ Input (3, 256, 256)
        │                                  │
    Decoder4 (64)   ←──────────────────────┘
        │
-   OutConv (num_classes)
+   OutConv (8 classes)
        │
-Output (num_classes, 256, 256)
+Output (8, 256, 256)
 ```
 
-**Key Components:**
-- **DoubleConv**: Conv3x3 → BatchNorm → ReLU → Conv3x3 → BatchNorm → ReLU
-- **EncoderBlock**: MaxPool2x2 → DoubleConv
-- **DecoderBlock**: Upsample → Concatenate (skip) → DoubleConv
-- **Skip Connections**: Preserve spatial information from encoder
+### Land-Cover Classes
 
-## ⚡ GPU Optimizations
-
-This project includes several GPU optimizations:
-
-1. **cuDNN Benchmark Mode**
-   ```python
-   torch.backends.cudnn.benchmark = True
-   ```
-   Automatically finds the fastest convolution algorithms.
-
-2. **Mixed Precision Training (AMP)**
-   ```python
-   with torch.cuda.amp.autocast():
-       outputs = model(images)
-   ```
-   Uses FP16 for faster computation with FP32 precision where needed.
-
-3. **Pin Memory**
-   ```python
-   DataLoader(..., pin_memory=True)
-   ```
-   Faster CPU-to-GPU data transfer.
-
-4. **Non-blocking Transfers**
-   ```python
-   images = images.to(device, non_blocking=True)
-   ```
-   Overlaps data transfer with computation.
-
-5. **Efficient Gradient Zeroing**
-   ```python
-   optimizer.zero_grad(set_to_none=True)
-   ```
-   More memory-efficient than `zero_grad()`.
-
-## 📈 Results
-
-After training, results are saved to:
-
-**Training outputs (`outputs/`):**
-- `best_model.pth` - Best model checkpoint
-- `final_model.pth` - Final epoch model
-- `training_history.png` - Loss curves
-- `training_history.csv` - Training log
-
-**Test results (`test_results/`):**
-- `test_metrics.txt` - IoU and Dice scores
-- `visualizations/` - Prediction visualizations
-
-## ⚙️ Configuration Options
-
-### Loss Functions
-
-| Loss | Description |
-|------|-------------|
-| `ce` | CrossEntropyLoss - Standard classification loss |
-| `combined` | Dice + CrossEntropy - Better for imbalanced classes |
-
-### Learning Rate Schedulers
-
-| Scheduler | Description |
-|-----------|-------------|
-| `plateau` | ReduceLROnPlateau - Reduces LR when val loss plateaus |
-| `cosine` | CosineAnnealingLR - Gradual LR decay |
-| `none` | No scheduling - Constant learning rate |
-
-### Model Variants
-
-| Model | Parameters | Description |
-|-------|------------|-------------|
-| `unet` | ~31M | Standard U-Net (64 base features) |
-| `unet_small` | ~7M | Smaller variant (32 base features) |
-
-## 📝 Example Output
-
-```
-================================================================================
-CROP CLASSIFICATION - U-NET TRAINING (GPU-OPTIMIZED)
-================================================================================
-
-✓ Random seed set to 42 for reproducibility
-✓ Using GPU: NVIDIA GeForce RTX 3090
-  CUDA Version: 11.8
-  GPU Memory: 24.0 GB
-
-GPU Optimizations Enabled:
-  - cuDNN benchmark: True
-  - cuDNN enabled: True
-  - TF32 allowed: True
-
-==============================================================
-MODEL: UNET
-==============================================================
-  Input channels:      3
-  Output classes:      10
-  Total parameters:    31,037,698
-  Trainable params:    31,037,698
-  Model size:          118.39 MB (float32)
-==============================================================
-
-Epoch 1/50 [Train]: 100%|██████████| 125/125 [00:45<00:00, loss: 0.8234]
-Epoch 1/50 [Val]  : 100%|██████████| 32/32 [00:08<00:00, loss: 0.6521]
-
-Epoch 1/50 Summary:
-  Train Loss:     0.8234
-  Val Loss:       0.6521
-  Learning Rate:  1.00e-04
-  ✓ NEW BEST MODEL SAVED!
-```
-
-## 🤝 Contributing
-
-Feel free to submit issues, fork the repository, and create pull requests for any improvements.
-
-## 📄 License
-
-This project is for educational purposes.
+| ID | Class | Colour |
+|----|-------|--------|
+| 0 | Water | 🔵 Blue |
+| 1 | Trees | 🟢 Dark Green |
+| 2 | Grass | 🟩 Light Green |
+| 3 | Flooded Vegetation | 🟣 Teal |
+| 4 | Crops | 🟡 Yellow |
+| 5 | Scrub / Shrub | 🟠 Orange |
+| 6 | Built Area | 🔴 Red |
+| 7 | Bare Ground | 🟤 Brown |
 
 ---
 
-**Author:** Deep Learning Project  
-**Date:** 2026
+## ⚡ GPU Optimisations
+
+| Optimisation | Code | Benefit |
+|-------------|------|---------|
+| cuDNN Benchmark | `torch.backends.cudnn.benchmark = True` | Auto-selects fastest conv algorithm |
+| Mixed Precision | `torch.cuda.amp.autocast()` | ~2× faster with FP16 |
+| Pin Memory | `DataLoader(pin_memory=True)` | Faster CPU → GPU transfer |
+| Non-blocking | `.to(device, non_blocking=True)` | Overlaps transfer & compute |
+| Efficient Grad Zero | `zero_grad(set_to_none=True)` | Lower memory usage |
+
+---
+
+## 🗄 Database
+
+**Status:** Schema defined, connection deferred.
+
+- **Engine:** PostgreSQL 16 + PostGIS 3.4
+- **ORM:** SQLAlchemy + GeoAlchemy2
+- **Table:** `crop_predictions` — stores image name, crop type, NDVI, confidence, class distribution, geometry, insight text
+- **Current behaviour:** Predictions stored in-memory (`_prediction_store` dict in `app.py`)
+
+Files: `database/database.py` (engine + session), `database/models.py` (ORM model).
+
+---
+
+## ⚙ Configuration
+
+### Training Arguments
+
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `--data_root` | `SEN-2 LULC` | Dataset root directory |
+| `--batch_size` | 8 | Batch size |
+| `--epochs` | 50 | Number of epochs |
+| `--learning_rate` | 1e-4 | Initial learning rate |
+| `--model_type` | unet | `unet` or `unet_small` |
+| `--loss_type` | combined | `ce` or `combined` (Dice + CE) |
+| `--use_amp` | True | Mixed precision training |
+| `--scheduler` | plateau | `plateau`, `cosine`, or `none` |
+| `--output_dir` | outputs | Output directory |
+
+### Environment Variables (`.env`)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DB_HOST` | localhost | PostgreSQL host |
+| `DB_PORT` | 5432 | PostgreSQL port |
+| `DB_NAME` | crop_db | Database name |
+| `DB_USER` | crop_user | Database user |
+| `DB_PASSWORD` | Crop@1234 | Database password |
+
+---
+
+## 📈 Results
+
+**Training outputs** → `outputs/`
+- `best_model.pth` — Best checkpoint (65.85 MB)
+- `training_history.png` — Loss & metric curves
+
+**Test results** → `test_results/`
+- `test_metrics.txt` — IoU & Dice scores per class
+- `visualizations/` — Input / GT / Prediction comparisons
+
+**Evaluation** → `evaluation_report/`
+- Detailed per-class metrics and confusion matrix
+
+---
+
+## 📄 License
+
+This project is for educational and research purposes.
+
+---
+
+**Author:** Crop Analytics Project  
+**Date:** 2026  
+**Stack:** FastAPI · React · PyTorch · PostgreSQL · Tailwind CSS
