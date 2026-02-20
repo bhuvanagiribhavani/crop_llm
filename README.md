@@ -135,7 +135,7 @@ crop_llm_full/
 │
 ├── evaluation_report/          # Evaluation outputs
 ├── test_results/               # Test prediction outputs
-├── .env                        # Environment variables (DB creds)
+├── .env                        # Environment variables (not tracked by git)
 ├── .gitignore
 └── README.md
 ```
@@ -185,19 +185,12 @@ npm run build
 
 ```bash
 # Create PostgreSQL database & user
-sudo -u postgres psql -c "CREATE USER crop_user WITH PASSWORD 'Crop@1234';"
-sudo -u postgres psql -c "CREATE DATABASE crop_db OWNER crop_user;"
-sudo -u postgres psql -d crop_db -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+sudo -u postgres psql -c "CREATE USER your_username WITH PASSWORD 'your_password';"
+sudo -u postgres psql -c "CREATE DATABASE your_database_name OWNER your_username;"
+sudo -u postgres psql -d your_database_name -c "CREATE EXTENSION IF NOT EXISTS postgis;"
 ```
 
-Configure credentials in `.env`:
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=crop_db
-DB_USER=crop_user
-DB_PASSWORD=Crop@1234
-```
+Create a `.env` file in the project root (see `.env.example` for the required variables). **Never commit real credentials to git.**
 
 ---
 
@@ -375,13 +368,17 @@ Files: `database/database.py` (engine + session), `database/models.py` (ORM mode
 
 ### Environment Variables (`.env`)
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DB_HOST` | localhost | PostgreSQL host |
-| `DB_PORT` | 5432 | PostgreSQL port |
-| `DB_NAME` | crop_db | Database name |
-| `DB_USER` | crop_user | Database user |
-| `DB_PASSWORD` | Crop@1234 | Database password |
+Create a `.env` file in the project root with the following keys:
+
+| Variable | Description |
+|----------|-------------|
+| `DB_HOST` | PostgreSQL host |
+| `DB_PORT` | PostgreSQL port |
+| `DB_NAME` | Database name |
+| `DB_USER` | Database user |
+| `DB_PASSWORD` | Database password |
+
+> **Note:** The `.env` file is listed in `.gitignore` and is never pushed to the repository.
 
 ---
 
