@@ -1,0 +1,65 @@
+# ================================================================================
+# CROP CLASSIFICATION - U-NET SEGMENTATION
+# Python Dependencies
+# ================================================================================
+
+# Core Deep Learning Framework (GPU Support)
+torch>=1.9.0
+torchvision>=0.10.0
+
+# Image Processing
+Pillow>=8.0.0
+
+# Numerical Computing
+numpy>=1.19.0 
+
+# Data Visualization
+matplotlib>=3.3.0
+
+# Progress Bars
+tqdm>=4.50.0
+
+# Web API Framework (FastAPI)
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+python-multipart>=0.0.5
+
+# Legacy Flask (kept for reference)
+# flask>=2.0.0
+# flask-cors>=3.0.0
+
+# PostgreSQL + PostGIS
+sqlalchemy>=2.0.0
+geoalchemy2>=0.14.0
+psycopg2-binary>=2.9.0
+python-dotenv>=1.0.0
+
+# ================================================================================
+# Optional Dependencies (uncomment if needed)
+# ================================================================================
+
+# Advanced Image Augmentation
+# albumentations>=1.0.0
+
+# Experiment Tracking
+# tensorboard>=2.4.0
+# wandb>=0.12.0
+
+# Jupyter Notebook Support
+# jupyter>=1.0.0
+# ipywidgets>=7.6.0
+
+# ================================================================================
+# Installation Instructions
+# ================================================================================
+# 
+# For GPU (CUDA) support, install PyTorch with CUDA:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+#
+# For CPU only:
+#   pip install torch torchvision
+#
+# Install all requirements:
+#   pip install -r requirements.txt
+#
+# ================================================================================

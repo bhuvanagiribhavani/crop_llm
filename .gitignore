@@ -1,0 +1,91 @@
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ========================
+# Virtual Environment
+# ========================
+venv/
+env/
+.venv/
+
+# ========================
+# Model Checkpoints & Weights (large files)
+# ========================
+outputs/best_model.pth
+outputs/final_model.pth
+outputs/mid_epoch_checkpoint.pth
+outputs/checkpoint_epoch_*.pth
+
+# ========================
+# Uploaded & Generated Images
+# ========================
+outputs/uploads/
+outputs/predictions/
+outputs/health/
+
+# ========================
+# Export files
+# ========================
+outputs/predictions_export.csv
+outputs/predictions_export.json
+
+# ========================
+# Dataset (large satellite imagery)
+# ========================
+SEN-2 LULC/
+miniDataSet/
+
+# ========================
+# Logs
+# ========================
+*.log
+server.log
+training.log
+training_live.log
+
+# ========================
+# Node.js / Frontend
+# ========================
+frontend/node_modules/
+frontend/build/
+frontend/.env
+frontend/.env.local
+
+# ========================
+# Frontend Backup (not needed in repo)
+# ========================
+frontend_backup/
+
+# ========================
+# Environment & Secrets
+# ========================
+.env
+
+# ========================
+# IDE / Editor
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ========================
+# OS Files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# Misc
+# ========================
+*.bak
+*.tmp
